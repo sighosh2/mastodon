@@ -28,7 +28,7 @@ services:
 #      - ./elasticsearch:/usr/share/elasticsearch/data
 
   web:
-    build: .
+    # build: .
     image: tootsuite/mastodon
     restart: always
     env_file: .env.production
@@ -45,8 +45,25 @@ services:
     volumes:
       - ./public/system:/mastodon/public/system
 
+  proxy:
+    image: nginx:latest
+    env_file: .env.production
+    networks:
+      - external_network
+      - internal_network
+    volumes:
+      - ./nginx.conf:/etc/nginx/sitesenabled/default
+    depends_on:
+      - web
+    ports:
+      - 8080:80
+      - 443:443
+    expose:
+      - "8080"
+      - "443"
+
   streaming:
-    build: .
+    # build: .
     image: tootsuite/mastodon
     restart: always
     env_file: .env.production
@@ -61,7 +78,7 @@ services:
       - redis
 
   sidekiq:
-    build: .
+    # build: .
     image: tootsuite/mastodon
     restart: always
     env_file: .env.production
